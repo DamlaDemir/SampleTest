@@ -270,9 +270,6 @@ namespace SampleTest.infrastructure.Repository
 			return table;
 		}
 
-        IQueryable<T> IRepository<T>.Query(Expression<Func<T, bool>> expression, bool showDeletedRows)
-        {
-            throw new NotImplementedException();
-        }
+    
     }
 }

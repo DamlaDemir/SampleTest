@@ -8,6 +8,8 @@ using Moq;
 using spock.infrastructure.UnitOfWork;
 using sampleTest.api.Controllers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using FluentAssertions;
 
 namespace sampleTest.api.test
 {
@@ -26,7 +28,7 @@ namespace sampleTest.api.test
             userList.AddRange(list);
         }
         [Fact]
-        public async Task CreateUser_Should_Return_True_With_Valid_Parameters()
+        public async Task CreateUser_Should_Return_Ok_With_Valid_Parameters()
         {
             var user = new User()
             {
@@ -44,12 +46,12 @@ namespace sampleTest.api.test
             _mockUow.Setup(x => x.Repository<User>().Add(It.IsAny<User>()));
             var sut = new UserController(_mockUow.Object, _mockUserService.Object);
             var actual = await sut.CreateUser(user);
-            var expected = true;
-            Assert.Equal(expected, actual);
+            actual.GetType().Should().Be(typeof(OkResult));
+
         }
 
         [Fact]
-        public async Task CreateUser_Should_Return_False_With_Existing_Email()
+        public async Task CreateUser_Should_Return_BadRequest_With_Existing_Email()
         {
             var user = new User()
             {
@@ -67,12 +69,12 @@ namespace sampleTest.api.test
             //_mockUow.Setup(x => x.Repository<User>().Add(It.IsAny<User>()));
             var sut = new UserController(_mockUow.Object, _mockUserService.Object);
             var actual = await sut.CreateUser(user);
-            var expected = false;
-            Assert.Equal(expected, actual);
+            actual.GetType().Should().Be(typeof(BadRequestObjectResult));
+
         }
 
         [Fact]
-        public async Task CreateUser_Should_Return_False_With_Empty_Paremeter()
+        public async Task CreateUser_Should_Return_BadRequest_With_Empty_Paremeter()
         {
             var user = new User()
             {
@@ -85,10 +87,9 @@ namespace sampleTest.api.test
                 .ReturnsAsync(false);
             _mockUow.Setup(x => x.Repository<User>().Add(It.IsAny<User>()));
             var sut = new UserController(_mockUow.Object, _mockUserService.Object);
-            sut.ModelState.AddModelError("a", "b");
+            sut.ModelState.AddModelError("error", "The Password field is required");
             var actual = await sut.CreateUser(user);
-            var expected = false;
-            Assert.Equal(expected, actual);
+            actual.GetType().Should().Be(typeof(BadRequestResult));
         }
     }
 }

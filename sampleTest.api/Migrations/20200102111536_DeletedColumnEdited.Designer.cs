@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sampleTest.model.context;
 
 namespace sampleTest.api.Migrations
 {
     [DbContext(typeof(SampleTestContext))]
-    partial class SampleTestContextModelSnapshot : ModelSnapshot
+    [Migration("20200102111536_DeletedColumnEdited")]
+    partial class DeletedColumnEdited
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,12 +27,12 @@ namespace sampleTest.api.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()

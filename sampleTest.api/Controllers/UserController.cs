@@ -11,7 +11,7 @@ using spock.infrastructure.UnitOfWork;
 
 namespace sampleTest.api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -24,23 +24,38 @@ namespace sampleTest.api.Controllers
             _userService = userService;
         }
 
-        public async Task<bool> CreateUser(User user)
+        [HttpPost]
+        public async Task<ActionResult> CreateUser([FromBody]User user)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (await _userService.CheckUserExists(user)) return false;
+                    if (await _userService.CheckUserExists(user)) return BadRequest("Error ! Existing user");
                     _uow.Repository<User>().Add(user);
                     _uow.SaveChanges();
-                    return true;
+                    return Ok();
                 }
                 else
-                    return false;              
+                    return BadRequest();              
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        {
+            try
+            {
+                var users = _uow.Repository<User>().Query().ToList();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(false);
             }
         }
     }

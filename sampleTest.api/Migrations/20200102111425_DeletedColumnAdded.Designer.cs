@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sampleTest.model.context;
 
 namespace sampleTest.api.Migrations
 {
     [DbContext(typeof(SampleTestContext))]
-    partial class SampleTestContextModelSnapshot : ModelSnapshot
+    [Migration("20200102111425_DeletedColumnAdded")]
+    partial class DeletedColumnAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,12 +31,12 @@ namespace sampleTest.api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Silindi")
+                        .HasColumnType("bit");
 
                     b.HasKey("UserId");
 

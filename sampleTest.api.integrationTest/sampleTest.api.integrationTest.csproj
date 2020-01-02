@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.10.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
@@ -17,8 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\sampleTest.api\sampleTest.api.csproj" />
-    <ProjectReference Include="..\sampleTest.infrastructure\sampleTest.infrastructure.csproj" />
-    <ProjectReference Include="..\sampleTest.model\sampleTest.model.csproj" />
   </ItemGroup>
 
 </Project>

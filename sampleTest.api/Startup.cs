@@ -32,7 +32,7 @@ namespace sampleTest.api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<SampleTestContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("sampleTest.api")));
+            ConfigureDatabase(services);
             services.AddControllers();
             services.AddScoped<IRepository<User>, Repository<User>>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -60,6 +60,10 @@ namespace sampleTest.api
             });
 
             SeedData.Seed(app);
+        }
+        public virtual void ConfigureDatabase(IServiceCollection services)
+        {
+            services.AddDbContext<SampleTestContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("sampleTest.api")));
         }
     }
 }
