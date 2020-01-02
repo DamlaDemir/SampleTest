@@ -11,6 +11,7 @@ namespace sampleTest.model.entities
         public int UserId { get; set; }
 
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Required]
