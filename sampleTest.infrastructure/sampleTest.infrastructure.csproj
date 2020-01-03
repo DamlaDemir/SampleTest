@@ -20,11 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\sampleTest.model\sampleTest.model.csproj" />
+    <Folder Include="UnitOfWork\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UnitOfWork\" />
+    <ProjectReference Include="..\sampleTest.model\sampleTest.model.csproj" />
   </ItemGroup>
 
 </Project>

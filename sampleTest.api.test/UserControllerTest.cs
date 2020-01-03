@@ -1,4 +1,4 @@
-using sampleTest.model.entities;
+﻿using sampleTest.model.entities;
 using sampleTest.infrastructure;
 using System;
 using System.Collections.Generic;
@@ -14,13 +14,14 @@ using AutoFixture.Xunit2;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using sampleTest.common.DTOs;
 
 namespace sampleTest.api.test
 {
     public class UserControllerTest
     {
-        //private readonly IUserService _mockUserService;
-        //private readonly IUnitOfWork _mockUow;
+
         private List<User> userList = new List<User>();
         public UserControllerTest()
         {
@@ -32,8 +33,14 @@ namespace sampleTest.api.test
             userList.AddRange(list);
         }
         [Theory, AutoMoqData]
-        public async Task CreateUser_Should_Return_Ok_With_Valid_Parameters(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow)
+        public async Task CreateUser_Should_Return_Success_With_Valid_Parameters(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow)
         {
+            JsonMessage expectedMessage = new JsonMessage()
+            {
+                result = true,
+                message = StringMessages.SuccessSave
+            };
+            //Arrange
             var user = new User()
             {
                 Email = "sample@gmail.com",
@@ -46,15 +53,29 @@ namespace sampleTest.api.test
                 //.Callback<User>(arg => userList.Add(user));
 
             _mockUow.Setup(x => x.Repository<User>().Add(It.IsAny<User>()));
+
+            //Act
             var sut = new UserController(_mockUow.Object, _mockUserService.Object);
-            var actual = await sut.CreateUser(user);
-            actual.GetType().Should().Be(typeof(OkResult));
+            var result = await sut.CreateUser(user);
+
+            //Assert
+            var apiOkResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+            var actual = apiOkResult.Value.Should().BeAssignableTo<JsonMessage>().Subject;
+            Assert.Equal(actual.result, expectedMessage.result);
+            Assert.Equal(actual.message, expectedMessage.message);
 
         }
 
         [Theory, AutoMoqData]
         public async Task CreateUser_Should_Return_BadRequest_With_Existing_Email(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow)
         {
+            JsonMessage expectedMessage = new JsonMessage()
+            {
+                result = false,
+                message = StringMessages.ExistUser
+            };
+
+            //Arrange
             var user = new User()
             {
                 Email = "dmldemirr@gmail.com",
@@ -63,18 +84,21 @@ namespace sampleTest.api.test
 
             _mockUserService.Setup(x => x.CheckUserExists(It.IsAny<User>()))
                 .ReturnsAsync(true);
-            //.Returns<bool>(arg => Task.FromResult(arg))
-            //.Callback<User>(arg => userList.Add(user));
+            _mockUow.Setup(x => x.Repository<User>().Add(It.IsAny<User>()));
 
-            //_mockUow.Setup(x => x.Repository<User>().Add(It.IsAny<User>()));
+            //Act
             var sut = new UserController(_mockUow.Object, _mockUserService.Object);
-            var actual = await sut.CreateUser(user);
-            actual.GetType().Should().Be(typeof(BadRequestObjectResult));
+            var result = await sut.CreateUser(user);
 
+            //Assert
+            var apiBadRequestResult = result.Result.Should().BeOfType<BadRequestObjectResult>().Subject;
+            var actual = apiBadRequestResult.Value.Should().BeAssignableTo<JsonMessage>().Subject;
+            Assert.Equal(actual.result, expectedMessage.result);
+            Assert.Equal(actual.message, expectedMessage.message);
         }
 
         [Theory, AutoMoqData]
-        public async Task Model_Validation_With_Empty_Email(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow)
+        public async Task Model_Validation_Return_Error_With_Empty_Email(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow)
         {
             var result = new List<ValidationResult>();
             var user = new User()
@@ -94,7 +118,7 @@ namespace sampleTest.api.test
         }
 
         [Theory, AutoMoqData]
-        public async Task Model_Validation_With_Invalid_Email(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow)
+        public async Task Model_Validation__Return_Error_With_Invalid_Email(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow)
         {
             var result = new List<ValidationResult>();
             var user = new User()
@@ -106,8 +130,33 @@ namespace sampleTest.api.test
             Assert.Contains("The Email field is not a valid e-mail address.", result[0].ErrorMessage);
             Assert.Equal(1, result.Count);
         }
+
+
+        [Theory, AutoMoqData]
+        public async Task GetAllUsers_Should_Return_User_List(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow, List<User> expected)
+        {
+            _mockUserService.Setup(x => x.GetAllUsers()).ReturnsAsync(expected);
+            var sut = new UserController(_mockUow.Object, _mockUserService.Object);
+            var result = sut.GetAllUsers();
+
+            _mockUserService.Verify(x => x.GetAllUsers()); //Bu method genel olarak assert yerine kullanılabilir. Verify edilen mock’lu methodların çağrılıp çağrılmadığı kontrol edilebilir.
+            var apiOkResult = result.Result.Result.Should().BeOfType<OkObjectResult>().Subject;
+            var actual = apiOkResult.Value.Should().BeAssignableTo<List<User>>().Subject;
+        }
+
+        [Theory, AutoMoqData]
+        public async Task GetAllUsers_With_Exception_Should_Return_BadRequest(Mock<IUserService> _mockUserService, Mock<IUnitOfWork> _mockUow, List<User> expected)
+        {
+            _mockUserService.Setup(x => x.GetAllUsers()).Throws(new Exception("Some exception Message"));//getallusers fonskyionunda hata alıp exception fırlatması durumunda
+            var sut = new UserController(_mockUow.Object, _mockUserService.Object);
+            var result = sut.GetAllUsers();
+
+            var apiOkResult = result.Result.Result.Should().BeOfType<BadRequestObjectResult>().Subject;
+            var actual = apiOkResult.Value.Should().BeAssignableTo<string>().Subject;
+
+        }
     }
-    //Method parameter olarak Automoq yapabilmek i�in kullanaca��m�z attribute
+    //Method parameter olarak Automoq yapabilmek için kullanılan attribute
     public class AutoMoqDataAttribute : AutoDataAttribute
     {
         public AutoMoqDataAttribute()

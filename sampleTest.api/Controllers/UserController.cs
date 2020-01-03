@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using sampleTest.common.DTOs;
 using sampleTest.infrastructure.Services;
 using sampleTest.model.entities;
 using SampleTest.infrastructure.Repository;
@@ -25,37 +26,46 @@ namespace sampleTest.api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateUser([FromBody]User user)
+        public async Task<ActionResult<JsonMessage>> CreateUser([FromBody]User user)
         {
+            JsonMessage message = new JsonMessage();
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (await _userService.CheckUserExists(user)) return BadRequest("Error ! Existing user");
+                    if (await _userService.CheckUserExists(user)) {
+                        message.result = false;
+                        message.message = StringMessages.ExistUser;
+                        return BadRequest(message);
+                    } 
                     _uow.Repository<User>().Add(user);
                     _uow.SaveChanges();
-                    return Ok();
+                    message.result = true;
+                    message.message = StringMessages.SuccessSave;
                 }
-                else
-                    return BadRequest();              
+                else                
+                    return BadRequest(ModelState);              
             }
             catch (Exception ex)
             {
-                return BadRequest();
+                message.result = false;
+                message.message = StringMessages.Error;
+                return BadRequest(message);
             }
+            return Ok(message);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        public async Task<ActionResult<List<User>>> GetAllUsers()
         {
             try
             {
-                var users = _uow.Repository<User>().Query().ToList();
+                var users = await _userService.GetAllUsers();
                 return Ok(users);
             }
             catch (Exception ex)
             {
-                return BadRequest(false);
+                return BadRequest("Exception");
             }
         }
     }

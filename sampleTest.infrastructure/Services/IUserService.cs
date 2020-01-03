@@ -9,5 +9,6 @@ namespace sampleTest.infrastructure.Services
     public interface IUserService
     {
        Task<bool> CheckUserExists(User user);
+       Task<List<User>> GetAllUsers();
     }
 }

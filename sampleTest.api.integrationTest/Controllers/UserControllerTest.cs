@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using sampleTest.api.integrationTestAS;
+using sampleTest.common.DTOs;
 using sampleTest.model.entities;
 using System;
 using System.Collections.Generic;
@@ -28,11 +29,13 @@ namespace sampleTest.api.integrationTest
             });
         }
 
-
         [Fact]
-        public async Task CreateUser_Should_Return_Ok_With_Valid_Parameters()
+        public async Task CreateUser_Should_Return_Success_With_Valid_Parameters()
         {
-            var expectedResult = true;
+            JsonMessage expectedMessage = new JsonMessage() { 
+                result = true,
+                message = StringMessages.SuccessSave
+            };
             var expectedStatusCode = HttpStatusCode.OK;
 
             // Arrange
@@ -48,11 +51,12 @@ namespace sampleTest.api.integrationTest
             var httpResponse = await _client.PostAsync("/api/User/CreateUser", content);
             var actualStatusCode = httpResponse.StatusCode;
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
-            //var actualResult = JsonConvert.DeserializeObject<bool>(stringResponse);
+            var actual = JsonConvert.DeserializeObject<JsonMessage>(stringResponse);
 
             // Assert
-            //Assert.Equal(expectedResult, actualResult);
             Assert.Equal(expectedStatusCode, actualStatusCode);
+            Assert.Equal(actual.result, expectedMessage.result);
+            Assert.Equal(actual.message, expectedMessage.message);
         }
 
         [Fact]
@@ -84,7 +88,11 @@ namespace sampleTest.api.integrationTest
         public async Task CreateUser_Should_BadRequest_With_Exist_Parameters()
         {
             var expectedStatusCode = HttpStatusCode.BadRequest;
-
+            JsonMessage expectedMessage = new JsonMessage()
+            {
+                result = false,
+                message = StringMessages.ExistUser
+            };
             // Arrange
             var user = new User()
             {
@@ -98,14 +106,17 @@ namespace sampleTest.api.integrationTest
             var httpResponse = await _client.PostAsync("/api/User/CreateUser", content);
             var actualStatusCode = httpResponse.StatusCode;
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+            var actual = JsonConvert.DeserializeObject<JsonMessage>(stringResponse);
 
             // Assert
-            Assert.Contains("Error ! Existing user", stringResponse);
             Assert.Equal(expectedStatusCode, actualStatusCode);
+            Assert.Equal(actual.result, expectedMessage.result);
+            Assert.Equal(actual.message, expectedMessage.message);
+            //Assert.Contains("Error ! Existing user", stringResponse);
         }
 
         [Fact]
-        public async Task GetAllUsers_Should_Ok()
+        public async Task GetAllUsers_Should_Return_User_List()
         {
             var expectedStatusCode = HttpStatusCode.OK;
    

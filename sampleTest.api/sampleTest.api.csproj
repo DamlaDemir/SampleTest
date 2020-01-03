@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -17,9 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\sampleTest.common\sampleTest.common.csproj" />
     <ProjectReference Include="..\sampleTest.infrastructure\sampleTest.infrastructure.csproj" />
     <ProjectReference Include="..\sampleTest.model\sampleTest.model.csproj" />
   </ItemGroup>
-
 
 </Project>

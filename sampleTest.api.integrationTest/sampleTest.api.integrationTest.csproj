@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\sampleTest.api\sampleTest.api.csproj" />
+    <ProjectReference Include="..\sampleTest.common\sampleTest.common.csproj" />
   </ItemGroup>
 
 </Project>
