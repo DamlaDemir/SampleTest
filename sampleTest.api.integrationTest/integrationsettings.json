@@ -1,0 +1,7 @@
+{
+  "ConnectionStrings": {
+    //"DefaultConnection": "server=DDEMIR;database=SampleTestQADb;username=ddemir;password=cts2003**;trusted_connection=true;"
+    "DefaultConnection": "Data Source=DDEMIR;Initial Catalog=SampleTestQADb;Persist Security Info=True;User ID=ddemir;Password=cts2003**;MultipleActiveResultSets=True;Connect Timeout=360;pooling=true;"
+
+  }
+}

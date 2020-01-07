@@ -30,10 +30,15 @@ namespace sampleTest.api
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
-            ConfigureDatabase(services);
+            var connStr = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<SampleTestContext>(options => options.UseSqlServer(connStr, b => {
+                b.MigrationsAssembly("sampleTest.api");
+                b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(100), null);
+            }));
             services.AddControllers();
+            services.AddSingleton<IConfiguration>(Configuration);
             services.AddScoped<IRepository<User>, Repository<User>>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
@@ -41,7 +46,7 @@ namespace sampleTest.api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -59,11 +64,7 @@ namespace sampleTest.api
                 endpoints.MapControllers();
             });
 
-            SeedData.Seed(app);
-        }
-        public virtual void ConfigureDatabase(IServiceCollection services)
-        {
-            services.AddDbContext<SampleTestContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("sampleTest.api")));
+            //SeedData.Seed(app);
         }
     }
 }
