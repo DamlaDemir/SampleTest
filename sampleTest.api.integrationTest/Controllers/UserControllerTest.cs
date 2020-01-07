@@ -31,32 +31,9 @@ namespace sampleTest.api.integrationTest
             {
                 AllowAutoRedirect = false
             });
-
-            //var projectDir = Directory.GetCurrentDirectory();
-            //var configPath = Path.Combine(projectDir, "appsettings.json");
-
-            //_factory = factory.WithWebHostBuilder(builder =>
-            //{
-            //    builder.UseSolutionRelativeContentRoot("sampleTest.api");
-
-            //    //builder.ConfigureAppConfiguration(conf =>
-            //    //{
-            //    //    conf.AddJsonFile(configPath);
-            //    //});
-            //    builder.ConfigureAppConfiguration((context, conf) =>
-            //    {
-            //        conf.AddJsonFile(configPath);
-            //    });
-
-            //    builder.ConfigureTestServices(services =>
-            //    {
-            //        services.AddMvc().AddApplicationPart(typeof(Startup).Assembly);
-            //    });
-            //});
         }
 
         [Fact]
-        //[TestBeforeAfter]
         public async Task CreateUser_Should_Return_Success_With_Valid_Parameters()
         {
 
@@ -163,7 +140,6 @@ namespace sampleTest.api.integrationTest
 
         public void Dispose() //her test bittiğinde çalışır
         {
-            //scope.Dispose();
         }
     }
 }

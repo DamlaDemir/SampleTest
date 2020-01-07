@@ -13,7 +13,8 @@ namespace sampleTest.api.integrationTest
         public static void PopulateTestData(SampleTestContext dbContext)
         {
             dbContext.Database.EnsureDeleted(); //veri tabanının silinmesi
-            dbContext.Database.Migrate();
+            dbContext.Database.Migrate(); //tekrar veritabanı oluşturulması
+
             //dbContext.Database.ExecuteSqlCommand("TRUNCATE TABLE [Users]");
             //dbContext.Database.ExecuteSqlCommand("sp_MSForEachTable 'TRUNCATE TABLE ?'");
 

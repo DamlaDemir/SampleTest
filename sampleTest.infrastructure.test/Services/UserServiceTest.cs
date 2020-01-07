@@ -1,4 +1,7 @@
-﻿using Moq;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using AutoFixture.Xunit2;
+using Moq;
 using sampleTest.infrastructure.Services;
 using sampleTest.model.entities;
 using SampleTest.infrastructure.Repository;
@@ -14,8 +17,8 @@ namespace sampleTest.infrastructure.test.Services
 {
     public class UserServiceTest
     {
-        //[ AutoMoqData]
-        //public async Task CheckUserExists_Return_True_With_Valid_Email(Mock<IRepository<User>> _mockUserRepository, List<User> expected,UserService sut)
+        //[AutoMoqData]
+        //public async Task CheckUserExists_Return_True_With_Valid_Email(Mock<IRepository<User>> _mockUserRepository, List<User> expected, UserService sut)
         //{
         //    ////Arrange
         //    var request = new User()
@@ -26,8 +29,14 @@ namespace sampleTest.infrastructure.test.Services
 
         //    _mockUserRepository.Setup(x => x.Query(It.IsAny<Expression<Func<User, bool>>>())).Returns(expected.AsQueryable);
 
-
-
         //}
+    }
+
+    public class AutoMoqDataAttribute : AutoDataAttribute
+    {
+        public AutoMoqDataAttribute()
+            : base(new Fixture().Customize(new AutoMoqCustomization()))
+        {
+        }
     }
 }
